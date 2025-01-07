@@ -1,14 +1,17 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { useAuthActions } from "@convex-dev/auth/react";
-import { useState } from "react";
 
-export const OauthProviders = () => {
-  const [pending, setPending] = useState(false);
+interface OauthProvidersProps {
+  pending: boolean;
+  setPending: (value: boolean) => void;
+}
 
+export const OauthProviders = ({
+  pending,
+  setPending,
+}: OauthProvidersProps) => {
   const { signIn } = useAuthActions();
   const handleProviderSignin = (value: "github" | "google") => {
     setPending(true);
@@ -27,7 +30,7 @@ export const OauthProviders = () => {
         onClick={() => handleProviderSignin("google")}
       >
         <FcGoogle className="absolute size-6 left-2.5 top-3" />
-        Continue with google
+        Continue with Google
       </Button>
       <Button
         className="w-full relative"
@@ -37,7 +40,7 @@ export const OauthProviders = () => {
         onClick={() => handleProviderSignin("github")}
       >
         <FaGithub className="absolute size-6 left-2.5 top-3" />
-        Continue with github
+        Continue with GitHub
       </Button>
     </div>
   );
