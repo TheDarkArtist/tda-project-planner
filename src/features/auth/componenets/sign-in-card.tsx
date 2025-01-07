@@ -8,10 +8,9 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
 import { SignInFlow } from "../types";
 import { useState } from "react";
+import { OauthProviders } from "./oauth-providers";
 
 interface SignInCardProps {
   setState: (state: SignInFlow) => void;
@@ -56,26 +55,7 @@ export const SignInCard = ({ setState }: SignInCardProps) => {
           </Button>
         </form>
         <Separator />
-        <div className="flex flex-col gap-y-2.5">
-          <Button
-            className="w-full relative"
-            size="lg"
-            variant="outline"
-            onClick={() => {}}
-          >
-            <FcGoogle className="absolute size-6 left-2.5 top-3" />
-            Continue with google
-          </Button>
-          <Button
-            className="w-full relative"
-            size="lg"
-            variant="outline"
-            onClick={() => {}}
-          >
-            <FaGithub className="absolute size-6 left-2.5 top-3" />
-            Continue with github
-          </Button>
-        </div>
+        <OauthProviders />
         <p className="text-xs text-slate-600">
           Don&apos;t have an account ?{" "}
           <span
