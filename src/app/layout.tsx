@@ -7,6 +7,7 @@ import "@/styles/globals.css";
 import { ConvexClientProvider } from "@/providers/convex-client-provider";
 import { Modals } from "@/components/modals";
 import { Toaster } from "sonner";
+import { JotaiProvider } from "@/providers/jotai-provider";
 
 export const metadata: Metadata = {
   title: "TDA Project Planner",
@@ -22,9 +23,11 @@ export default function RootLayout({
       <html lang="en">
         <body className={cn(inter.className, "antialiased")}>
           <ConvexClientProvider>
-            <Toaster />
-            <Modals />
-            {children}
+            <JotaiProvider>
+              <Toaster />
+              <Modals />
+              {children}
+            </JotaiProvider>
           </ConvexClientProvider>
         </body>
       </html>
