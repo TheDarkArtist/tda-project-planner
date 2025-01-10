@@ -5,7 +5,6 @@ import { inter } from "@/lib/fonts";
 import { cn } from "@/lib/utils";
 import "@/styles/globals.css";
 import { ConvexClientProvider } from "@/providers/convex-client-provider";
-import { CreateWorkspaceModal } from "@/features/workspaces/components/create-workspace-modal";
 import { Modals } from "@/components/modals";
 import { Toaster } from "sonner";
 
