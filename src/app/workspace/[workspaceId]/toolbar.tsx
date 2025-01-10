@@ -8,7 +8,7 @@ export const Toolbar = () => {
   const { data } = useGetWorkspace({ id: workspaceId });
 
   return (
-    <nav className="bg-slate-800 flex items-center justify-between h-10 p-1.5">
+    <nav className="bg-slate-800 border-b border-gray-700 flex items-center justify-between h-10 p-1.5">
       <div className="flex-1" />
       <div className="min-w-72 max-w-screen-sm grow-[2] shrink">
         <Button
