@@ -1,0 +1,101 @@
+import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Doc } from "../../../../convex/_generated/dataModel";
+import { ChevronDown, ListFilter, SquarePen } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
+import Hint from "@/components/hint";
+
+interface WorkspaceHeaderProps {
+  workspace: Doc<"workspaces">;
+  isAdmin: boolean;
+}
+
+export const WorkspaceHeader = ({
+  workspace,
+  isAdmin,
+}: WorkspaceHeaderProps) => {
+  return (
+    <div className="flex items-center justify-between px-4 h-[49px] gap-0.5">
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            className="font-semibold text-lg w-auto py-1.5 overflow-hidden"
+            variant="transparent"
+            size="sm"
+          >
+            <span className="truncate capitalize">{workspace?.name}</span>
+            <ChevronDown className="size-4 ml-1 shrink-0" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          className="w-64"
+          side="bottom"
+          align="start"
+        >
+          <DropdownMenuItem className="cursor-pointer capitalize">
+            <div className="size-9 relative overflow-hidden bg-slate-800 text-white font-semibold rounded-md text-lg flex items-center justify-center">
+              {workspace.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="flex flex-col items-start">
+              <p className="font-bold">{workspace.name}</p>
+              <p className="text-xs text-slate-600">Active workspace</p>
+            </div>
+          </DropdownMenuItem>
+          {isAdmin && (
+            <>
+              <Separator />
+              <DropdownMenuItem
+                className="cursor-pointer py-2"
+                onClick={() => {}}
+              >
+                <span className="truncate">
+                  Invite people to {workspace.name}
+                </span>
+              </DropdownMenuItem>
+              <Separator />
+              <DropdownMenuItem
+                className="cursor-pointer py-2"
+                onClick={() => {}}
+              >
+                Preferences
+              </DropdownMenuItem>
+            </>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
+      <div className="flex items-center gap-1.5">
+        <Hint
+          label="Filter out conversations"
+          side="bottom"
+          asChild
+        >
+          <Button
+            className=""
+            variant="transparent"
+            size="iconSm"
+          >
+            <ListFilter className="size-4" />
+          </Button>
+        </Hint>
+        <Hint
+          label="New message"
+          side="bottom"
+          asChild
+        >
+          <Button
+            className=""
+            variant="transparent"
+            size="iconSm"
+          >
+            <SquarePen className="size-4" />
+          </Button>
+        </Hint>
+      </div>
+    </div>
+  );
+};
