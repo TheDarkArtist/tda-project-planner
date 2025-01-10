@@ -1,6 +1,7 @@
-import { v, VId } from "convex/values";
+import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 import { getAuthUserId } from "@convex-dev/auth/server";
+import { generateCode } from "@/lib/utils";
 
 export const create = mutation({
   args: {
@@ -13,23 +14,51 @@ export const create = mutation({
       throw new Error("Unauthorized");
     }
 
-    // TODO: Create a proper method for joinCode
-    const joinCode = "123456";
+    const joinCode = generateCode();
 
-    const workspacesId = await ctx.db.insert("workspaces", {
+    const workspaceId = await ctx.db.insert("workspaces", {
       name: args.name,
       userId,
       joinCode,
     });
 
-    return workspacesId;
+    await ctx.db.insert("members", {
+      userId,
+      workspaceId,
+      role: "admin",
+    });
+
+    return workspaceId;
   },
 });
 
 export const get = query({
   args: {},
   handler: async (ctx) => {
-    return await ctx.db.query("workspaces").collect();
+    const userId = await getAuthUserId(ctx);
+
+    if (!userId) {
+      return [];
+    }
+
+    const members = await ctx.db
+      .query("members")
+      .withIndex("by_user_id", (q) => q.eq("userId", userId))
+      .collect();
+
+    const workspaceIds = members.map((m) => m.workspaceId);
+
+    const workspaces = [];
+
+    for (const workspaceId of workspaceIds) {
+      const workspace = await ctx.db.get(workspaceId);
+
+      if (workspace) {
+        workspaces.push(workspace);
+      }
+    }
+
+    return workspaces;
   },
 });
 
@@ -42,7 +71,15 @@ export const getById = query({
       throw new Error("Unauthorized");
     }
 
-    // TODO: Only members can fetch the workspaces
+    const members = ctx.db
+      .query("members")
+      .withIndex("by_workspace_id_user_id", (q) =>
+        q.eq("workspaceId", args.id).eq("userId", userId),
+      )
+      .unique();
+
+    if (!members) return null;
+
     return await ctx.db.get(args.id);
   },
 });
