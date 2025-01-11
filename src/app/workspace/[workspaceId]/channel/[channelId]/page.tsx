@@ -1,9 +1,36 @@
-import React from 'react'
+"use client";
+
+import { useGetChannel } from "@/features/channels/api/use-get-channel";
+import { useChannelId } from "@/hooks/use-channel-id";
+import { Loader, TriangleAlert } from "lucide-react";
+import { Header } from "./header";
 
 const ChannelIdPage = () => {
-  return (
-    <div>ChannelIdPage</div>
-  )
-}
+  const channelId = useChannelId();
+  const { data: channel, isLoading: channelLoading } = useGetChannel({
+    id: channelId,
+  });
 
-export default ChannelIdPage
+  if (channelLoading) {
+    <div className="h-full flex-1 flex items-center justify-center">
+      <Loader className="size-6 animate-spin text-slate-600" />
+    </div>;
+  }
+
+  if (!channel) {
+    return (
+      <div className="h-full flex-1 flex flex-col gap-y-2 items-center justify-center">
+        <TriangleAlert className="size-6 text-slate-600" />
+        <span className="text-sm text-slate-600">Channel not found</span>
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-col h-full">
+      <Header title={channel.name} />
+    </div>
+  );
+};
+
+export default ChannelIdPage;
