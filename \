@@ -1,0 +1,36 @@
+"use client";
+
+import Image from "next/image";
+import VerificationInput from "react-verification-input";
+
+const JoinPage = () => {
+  return (
+    <div className="h-full flex flex-col gap-y-8 items-center justify-center bg-white p-8">
+      <Image
+        src="/logo.svg"
+        alt="TDA logo"
+        height={64}
+        width={64}
+      />
+      <div className="flex flex-col gap-y-4 items-center justify-center max-w-md">
+        <div className="flex flex-col items-center justify-center">
+          <h1 className="text-2xl font-bold">Join workspace</h1>
+          <p className="text-slate-600">Enter the workspace code to join</p>
+        </div>
+        <VerificationInput
+          classNames={{
+            container: "flex gap-x-2",
+            character:
+              "uppercase h-auto rounded-md border border-gray-300 flex items-center justify-center text-lg font-medium text-gray-500",
+            characterInactive: "bg-slate-200",
+            characterSelected: "bg-white text-black",
+            characterFilled: "bg-white text-black",
+          }}
+          placeholder="_"
+        />
+      </div>
+    </div>
+  );
+};
+
+export default JoinPage;
