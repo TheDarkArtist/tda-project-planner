@@ -12,7 +12,7 @@ const sidebarItemVariants = cva(
     variants: {
       variant: {
         default: "text-gray-300",
-        active: "text-gray-300 bg-slate-600 hover:bg-gray-600/90",
+        active: "text-gray-300 bg-slate-700 hover:bg-gray-600/90",
       },
     },
     defaultVariants: {
