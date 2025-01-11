@@ -7,16 +7,14 @@ export function cn(...inputs: ClassValue[]) {
 
 /**
  * Generate a a six digit random code
- * i.e.  4kJ23l
- * contains: a-z A-Z 0-9
+ * - Code is not case sensitive
+ * i.e.  4kj23l
  * **/
 export const generateCode = () => {
   const code = Array.from(
     { length: 6 },
     () =>
-      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"[
-        Math.floor(Math.random() * 36)
-      ],
+      "0123456789abcdefghijklmnopqrstuvwxyz"[Math.floor(Math.random() * 36)],
   ).join("");
 
   return code;
