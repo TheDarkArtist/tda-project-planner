@@ -22,7 +22,7 @@ interface EditorProps {
   onSubmit: ({ image, body }: EditorValue) => void;
   onCancel?: () => void;
   placeholder?: string;
-  defaultValue?: Delta | Op[];
+  defaultValue: Delta | Op[];
   disabled?: boolean;
   innerRef?: RefObject<Quill | null>;
 }
@@ -40,7 +40,7 @@ const Editor = ({
   const submitRef = useRef(onSubmit);
   const placeholderRef = useRef(placeholder);
   const quillRef = useRef<Quill | null>(null);
-  const defaultValueRef = useRef(defaultValue);
+  const defaultValueRef = useRef<Delta | Op[]>(defaultValue);
   const disabledRef = useRef(disabled);
   const imageElementRef = useRef<HTMLInputElement>(null);
 
