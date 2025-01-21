@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "clean-bear-570.convex.cloud",
       },
+      {
+        protocol: "https",
+        hostname: "clean-bear-570.convex.site",
+      },
     ],
   },
 };
