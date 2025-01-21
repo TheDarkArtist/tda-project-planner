@@ -191,7 +191,7 @@ const Editor = ({
                 </button>
               </Hint>
               <Image
-                className="rounded-xl ;overflow-hidden border object-cover"
+                className="rounded-xl overflow-hidden border object-cover"
                 src={URL.createObjectURL(image)}
                 alt="uploaded"
                 fill
