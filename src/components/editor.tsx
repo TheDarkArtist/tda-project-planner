@@ -68,15 +68,11 @@ const Editor = ({
       placeholder: placeholderRef.current,
       modules: {
         toolbar: [
-          ["link"],
+          ["link", { align: [] }],
           ["bold", "italic", "underline", "strike"],
-          ["blockquote", "code-block"],
-          [{ header: 1 }, { header: 2 }],
           [{ list: "ordered" }, { list: "bullet" }, { list: "check" }],
           [{ script: "sub" }, { script: "super" }],
-          [{ indent: "-1" }, { indent: "+1" }],
           [{ color: [] }, { background: [] }],
-          [{ align: [] }],
         ],
         keyboard: {
           bindings: {
@@ -203,7 +199,7 @@ const Editor = ({
             </div>
           </div>
         )}
-        <div className="flex px-2 pb-2 z-[5]">
+        <div className="flex px-2 pb-2">
           <Hint
             label={isToolbarVisible ? "Hide formatting" : "Show formatting"}
             asChild
