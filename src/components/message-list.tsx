@@ -7,6 +7,7 @@ import { Id } from "../../convex/_generated/dataModel";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { useCurrentMember } from "@/features/members/api/use-current-member";
 import { Loader } from "lucide-react";
+import { ConversationHero } from "./conversation-hero";
 
 const TIME_THRESHOLD = 16;
 
@@ -100,6 +101,7 @@ export const MessageList = ({
                 threadCount={message?.threadCount}
                 threadImage={message?.threadImage}
                 threadTimestamp={message?.threadTimestamp}
+                threadName={message?.threadName}
                 isEditing={editingId === message?._id}
                 setEditingId={setEditingId}
                 isCompact={!!isCompact}
@@ -140,6 +142,12 @@ export const MessageList = ({
         <ChannelHero
           name={channelName}
           creationTime={channelCreationTime}
+        />
+      )}
+      {variant === "conversation" && (
+        <ConversationHero
+          name={memberName}
+          image={memberImage}
         />
       )}
     </div>

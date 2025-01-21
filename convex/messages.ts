@@ -17,6 +17,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
       count: 0,
       image: undefined,
       timestamp: 0,
+      name: "",
     };
   }
 
@@ -28,6 +29,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
       count: 0,
       image: undefined,
       timestamp: 0,
+      name: "",
     };
   }
 
@@ -37,6 +39,7 @@ const populateThread = async (ctx: QueryCtx, messageId: Id<"messages">) => {
     count: messages.length,
     image: lastMessageUser?.image,
     timestamp: lastMessage._creationTime,
+    name: lastMessageUser?.name,
   };
 };
 
@@ -197,6 +200,7 @@ export const get = query({
               reactions: reactionsWithoutMemberId,
               threadCount: thread.count,
               threadImage: thread.image,
+              threadName: thread.name,
               threadTimestamp: thread.timestamp,
             };
           })
@@ -267,7 +271,7 @@ export const getById = query({
     if (!message) return null;
 
     const currentMember = await getMember(ctx, message.workspaceId, userId);
-    if (!currentMember) return null
+    if (!currentMember) return null;
 
     const member = await populateMember(ctx, message.memberId);
     if (!member) return null;
@@ -309,10 +313,12 @@ export const getById = query({
 
     return {
       ...message,
-      image: message.image ? await ctx.storage.getUrl(message.image) : undefined,
+      image: message.image
+        ? await ctx.storage.getUrl(message.image)
+        : undefined,
       user,
       member,
-      reactions: reactionsWithoutMemberId
-    }
+      reactions: reactionsWithoutMemberId,
+    };
   },
 });

@@ -22,7 +22,7 @@ interface EditorProps {
   onSubmit: ({ image, body }: EditorValue) => void;
   onCancel?: () => void;
   placeholder?: string;
-  defaultValue: Delta | Op[];
+  defaultValue?: Delta | Op[];
   disabled?: boolean;
   innerRef?: RefObject<Quill | null>;
 }
