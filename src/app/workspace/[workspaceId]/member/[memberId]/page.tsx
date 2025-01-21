@@ -4,17 +4,13 @@ import { useCreateOrGetConversations } from "@/features/conversations/api/use-cr
 import { useMemberId } from "@/hooks/use-member-id";
 import { useWorkspaceId } from "@/hooks/use-workspace-id";
 import { AlertTriangle, Loader } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import { Conversation } from "./conversation";
-import { Id } from "../../../../../../convex/_generated/dataModel";
 
 const MemberIdPage = () => {
   const workspaceId = useWorkspaceId();
   const memberId = useMemberId();
-
-  const [conversationId, setConversationId] =
-    useState<Id<"conversations"> | null>(null);
 
   const { data, mutate, isPending } = useCreateOrGetConversations();
 
@@ -25,9 +21,6 @@ const MemberIdPage = () => {
         memberId,
       },
       {
-        onSuccess(data) {
-          setConversationId(data);
-        },
         onError() {
           toast.error("Failed to get or create a conversations");
         },
@@ -52,7 +45,7 @@ const MemberIdPage = () => {
     );
   }
 
-  return <Conversation id={conversationId} />;
+  return <Conversation id={data} />;
 };
 
 export default MemberIdPage;
