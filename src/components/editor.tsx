@@ -9,7 +9,7 @@ import { MdSend } from "react-icons/md";
 import { ImageIcon, Smile, XIcon } from "lucide-react";
 import Hint from "./hint";
 import { cn } from "@/lib/utils";
-import { EmojiPopover } from "./emoji-popover";
+import { EmojiPopover, EmojiType } from "./emoji-popover";
 import Image from "next/image";
 
 type EditorValue = {
@@ -113,7 +113,7 @@ const Editor = ({
 
     if (innerRef) innerRef.current = quill;
 
-    quill.setContents(defaultValueRef.current);
+    quill.setContents(defaultValueRef.current as Delta | Op[]);
     setText(quill.getText());
 
     quill.on(Quill.events.TEXT_CHANGE, () => {
@@ -149,7 +149,7 @@ const Editor = ({
     }
   };
 
-  const onEmojiSelect = (emoji: any) => {
+  const onEmojiSelect = (emoji: EmojiType) => {
     const quill = quillRef.current;
     quill?.insertText(quill.getSelection()?.index || 0, emoji.native);
   };

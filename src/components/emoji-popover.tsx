@@ -9,10 +9,16 @@ import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 import Picker from "@emoji-mart/react";
 import data from "@emoji-mart/data";
 
+export interface EmojiType {
+  native: string;
+  id: string;
+  name: string;
+}
+
 interface EmojiPopoverProps {
   children: ReactNode;
   hint?: string;
-  onEmojiSelect: (emoji: any) => void;
+  onEmojiSelect: (emoji: EmojiType) => void;
 }
 
 export const EmojiPopover = ({
@@ -23,7 +29,7 @@ export const EmojiPopover = ({
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const onSelect = (emoji: any) => {
+  const onSelect = (emoji: EmojiType) => {
     onEmojiSelect(emoji);
     setPopoverOpen(false);
 

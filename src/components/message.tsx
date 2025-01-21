@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import { Doc, Id } from "../../convex/_generated/dataModel";
-import { format, isToday, isYesterday } from "date-fns";
+import { format, isToday, isYesterday, isValid } from "date-fns";
 import Hint from "./hint";
 import { Avatar, AvatarFallback } from "./ui/avatar";
 import { AvatarImage } from "@radix-ui/react-avatar";
@@ -19,6 +19,35 @@ import { ThreadBar } from "./thread-bar";
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
 const Renderer = dynamic(() => import("@/components/renderer"), { ssr: false });
 
+const DATE_FORMATS = {
+  TIME: "h:mm a",
+  TIME_COMPACT: "h:mm",
+  FULL_TIME: "h:mm:ss a",
+  DATE: "MMM d, yyyy",
+} as const;
+
+const formatDate = (date: Date | number | undefined): string => {
+  if (!date) return "";
+
+  try {
+    const dateObj = new Date(date);
+    if (!isValid(dateObj)) return "Invalid date";
+
+    if (isToday(dateObj)) {
+      return `Today at ${format(dateObj, DATE_FORMATS.TIME)}`;
+    }
+
+    if (isYesterday(dateObj)) {
+      return `Yesterday at ${format(dateObj, DATE_FORMATS.TIME)}`;
+    }
+
+    return `${format(dateObj, DATE_FORMATS.DATE)} at ${format(dateObj, DATE_FORMATS.TIME)}`;
+  } catch (error) {
+    console.error("Error formatting date:", error);
+    return "Invalid date";
+  }
+};
+
 interface MessageProps {
   id: Id<"messages">;
   memberId: Id<"members">;
@@ -31,7 +60,7 @@ interface MessageProps {
       memberIds: Id<"members">[];
     }
   >;
-  body?: Doc<"messages">["body"];
+  body: Doc<"messages">["body"];
   image: string | null | undefined;
   createdAt?: Doc<"messages">["_creationTime"];
   updatedAt: Doc<"messages">["updatedAt"];
@@ -70,7 +99,7 @@ export const Message = ({
 
   const [ConfirmDialog, confirm] = useConfirm(
     "Delete message",
-    "Are you sure you want to delete this message? This action can't be ",
+    "Are you sure you want to delete this message? This action can't be undone",
   );
 
   const { mutate: updateMessage, isPending: isUpdatingMessage } =
@@ -101,7 +130,7 @@ export const Message = ({
       { id },
       {
         onSuccess: () => {
-          toast.success("Message delete");
+          toast.success("Message deleted");
           if (parentMessageId === id) {
             onCloseMessage();
           }
@@ -128,11 +157,8 @@ export const Message = ({
     );
   };
 
-  const formatFullTime = (date: Date) => {
-    return `${isToday(date) ? "Today" : isYesterday(date) ? "Yesterday" : format(date, "MMM d, yyyy")} at  ${format(date, "h:mm:ss a")}`;
-  };
-
   const avatarFallback = authorName.charAt(0).toUpperCase();
+  const formattedTime = formatDate(createdAt);
 
   if (isCompact) {
     return (
@@ -140,7 +166,7 @@ export const Message = ({
         <ConfirmDialog />
         <div
           className={cn(
-            "flex flex-col gap-2 p-1.5 px-5 hover:bg-slate-100/60 group relative",
+            "flex flex-col gap-2 py-1 px-5 hover:bg-slate-100 group relative",
             isEditing && "bg-lime-100/70 hover:bg-lime-100/70",
             isRemovingMessage &&
               "bg-rose-500/50 transform transition-all scale-y-0 origin-bottom ease-in-out duration-1000",
@@ -148,11 +174,13 @@ export const Message = ({
         >
           <div className="flex items-start gap-2">
             <Hint
-              label={formatFullTime(new Date(createdAt))}
+              label={formattedTime}
               asChild
             >
-              <button className="text-xs text-slate-600 mt-1 opacity-0 group-hover:opacity-100 ml-2">
-                {format(new Date(createdAt), "hh:mm")}
+              <button className="text-xs text-slate-600 border opacity-0 group-hover:opacity-100 ml-2 mt-1">
+                {createdAt
+                  ? format(new Date(createdAt), DATE_FORMATS.TIME_COMPACT)
+                  : ""}
               </button>
             </Hint>
             {isEditing ? (
@@ -246,11 +274,13 @@ export const Message = ({
                 </button>
                 <span>&nbsp;&nbsp;</span>
                 <Hint
-                  label={formatFullTime(new Date(createdAt))}
+                  label={formattedTime}
                   asChild
                 >
                   <button className="text-xs text-slate-600 hover:underline">
-                    {format(new Date(createdAt), "h:mm a")}
+                    {createdAt
+                      ? format(new Date(createdAt), DATE_FORMATS.TIME)
+                      : ""}
                   </button>
                 </Hint>
               </div>

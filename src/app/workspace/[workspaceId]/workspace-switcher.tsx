@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation";
 
 export const WorkspaceSwitcher = () => {
   const workspaceId = useWorkspaceId();
-  const [_open, setOpen] = useCreateWorkspaceModal();
+  const [, setOpen] = useCreateWorkspaceModal();
   const router = useRouter();
 
   const { data: workspaces, isLoading: workspacesLoading } = useGetWorkspaces();
@@ -51,7 +51,9 @@ export const WorkspaceSwitcher = () => {
           <span className="text-xs text-gray-600">Active workspace</span>
         </DropdownMenuItem>
         <Separator className="my-1" />
-        {workspacesLoading && <Loader className="size-5 mx-auto my-2 animate-spin" />}
+        {workspacesLoading && (
+          <Loader className="size-5 mx-auto my-2 animate-spin" />
+        )}
         {filteredWorkspaces?.map((workspace) => (
           <DropdownMenuItem
             className="cursor-pointer capitalize"

@@ -17,6 +17,13 @@ import { differenceInMinutes, format, isToday, isYesterday } from "date-fns";
 
 const Editor = dynamic(() => import("@/components/editor"), { ssr: false });
 
+const DATE_FORMAT = {
+  GROUP_KEY: "yyyy-MM-dd",
+  FULL_DATE: "EEEE, MMMM d",
+} as const;
+
+const TIME_THRESHOLD = 16;
+
 interface ThreadProps {
   messageId: Id<"messages">;
   onClose: () => void;
@@ -29,8 +36,6 @@ type CreateMessageValues = {
   body: string;
   image?: Id<"_storage"> | undefined;
 };
-
-const TIME_THRESHOLD = 16;
 
 export const Thread = ({ messageId, onClose }: ThreadProps) => {
   const workspaceId = useWorkspaceId();
@@ -77,7 +82,7 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
       };
 
       if (image) {
-        const url = await generateUploadUrl({}, { throwError: true });
+        const url = await generateUploadUrl(null, { throwError: true });
 
         if (!url) {
           throw new Error("Url not found");
@@ -109,29 +114,35 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
     }
   };
 
-  const groupedMessages = results?.reduce(
-    (groups, message) => {
-      const date = new Date(message?._creationTime);
-      const dateKey = format(date, "yyyy-MM-dd");
+  const groupedMessages = results?.reduce<
+    Record<string, NonNullable<typeof results>[number][]>
+  >((groups, message) => {
+    if (!message) return groups;
 
-      if (!groups[dateKey]) {
-        groups[dateKey] = [];
-      }
+    const date = new Date(message._creationTime);
+    const dateKey = format(date, DATE_FORMAT.GROUP_KEY);
 
-      groups[dateKey].unshift(message);
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
 
-      return groups;
-    },
-    {} as Record<string, typeof results>,
-  );
+    groups[dateKey].unshift(message);
+
+    return groups;
+  }, {});
 
   const formatDateLabel = (dateStr: string) => {
     const date = new Date(dateStr);
 
-    if (isToday(date)) return "Today";
-    if (isYesterday(date)) return "Yesterday";
+    if (isToday(date)) {
+      return "Today";
+    }
 
-    return format(date, "EEEE, MMMM d");
+    if (isYesterday(date)) {
+      return "Yesterday";
+    }
+
+    return format(date, DATE_FORMAT.FULL_DATE);
   };
 
   if (isMessageLoading) {
@@ -159,7 +170,6 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
           <AlertTriangleIcon className="size-8 text-rose-500" />
           <p className="text-sm text-rose-600">Message not found</p>
         </div>
-        ;
       </div>
     );
   }
@@ -186,37 +196,40 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
               </span>
             </div>
             {messages.map((message, index) => {
+              if (!message) return null;
+
               const prevMsg = messages[index - 1];
 
-              const isCompact =
+              const isCompact = Boolean(
                 prevMsg &&
-                prevMsg.user._id === message?.user._id &&
-                differenceInMinutes(
-                  new Date(message._creationTime),
-                  new Date(prevMsg._creationTime),
-                ) < TIME_THRESHOLD;
+                  prevMsg.user._id === message.user._id &&
+                  differenceInMinutes(
+                    new Date(message._creationTime),
+                    new Date(prevMsg._creationTime),
+                  ) < TIME_THRESHOLD,
+              );
 
               return (
                 <Message
-                  key={message?._id}
+                  key={message._id}
                   id={message._id}
                   memberId={message.memberId}
-                  authorImage={message?.user.image}
-                  authorName={message?.user.name}
-                  reactions={message?.reactions}
-                  body={message?.body}
-                  image={message?.image}
-                  updatedAt={message?.updatedAt}
-                  createdAt={message?._creationTime}
-                  threadCount={message?.threadCount}
-                  threadImage={message?.threadImage}
-                  threadName={message?.threadName}
-                  threadTimestamp={message?.threadTimestamp}
-                  isEditing={editingId === message?._id}
+                  authorImage={message.user.image}
+                  authorName={message.user.name}
+                  reactions={message.reactions}
+                  body={message.body}
+                  image={message.image}
+                  updatedAt={message.updatedAt}
+                  createdAt={message._creationTime}
+                  threadCount={message.threadCount}
+                  threadImage={message.threadImage}
+                  threadName={message.threadName}
+                  threadTimestamp={message.threadTimestamp}
+                  isEditing={editingId === message._id}
                   setEditingId={setEditingId}
-                  isCompact={!!isCompact}
+                  isCompact={isCompact}
                   hideThreadButton={true}
-                  isAuthor={message?.memberId === currentMember?._id}
+                  isAuthor={message.memberId === currentMember?._id}
                 />
               );
             })}
@@ -226,19 +239,19 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
         <div
           className="h-1"
           ref={(el) => {
-            if (el) {
-              const observer = new IntersectionObserver(
-                ([entry]) => {
-                  if (entry.isIntersecting && canLoadMore) {
-                    loadMore();
-                  }
-                },
-                { threshold: 1.0 },
-              );
+            if (!el) return;
 
-              observer.observe(el);
-              return () => observer.disconnect();
-            }
+            const observer = new IntersectionObserver(
+              ([entry]) => {
+                if (entry.isIntersecting && canLoadMore && !isLoadingMore) {
+                  loadMore();
+                }
+              },
+              { threshold: 1.0 },
+            );
+
+            observer.observe(el);
+            return () => observer.disconnect();
           }}
         />
 
@@ -264,6 +277,8 @@ export const Thread = ({ messageId, onClose }: ThreadProps) => {
           isEditing={editingId === message._id}
           setEditingId={setEditingId}
           hideThreadButton
+          isCompact={false}
+          image={message.image}
         />
       </div>
       <div className="px-4">

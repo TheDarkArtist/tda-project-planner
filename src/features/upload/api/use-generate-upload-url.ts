@@ -52,7 +52,7 @@ export const useGenerateUploadUrl = () => {
   const mutation = useMutation(api.upload.generateUploadUrl);
 
   const mutate = useCallback(
-    async (_values: {}, options: Options = {}) => {
+    async (_values: null, options: Options = {}) => {
       dispatch({ type: "pending" });
 
       try {
